@@ -21,21 +21,21 @@ const CONFIG = {
     'ADAUSDT': {
       minVolumeUSD: 1_000_000,
       minDominance: 65.0,
-      minPriceChange: 0.6,
+      minPriceChange: 0.5,
       cooldownMinutes: 5,
       enabled: true
     },
     'TAOUSDT': {
       minVolumeUSD: 1_500_000,
-      minDominance: 65.0,
+      minDominance: 70.0,
       minPriceChange: 0.6,
       cooldownMinutes: 5,
       enabled: true
     },
     'HYPEUSDT': {
-      minVolumeUSD: 5_000_000,
+      minVolumeUSD: 2_000_000,
       minDominance: 70.0,
-      minPriceChange: 0.8,
+      minPriceChange: 1,
       cooldownMinutes: 5,
       enabled: true
     },

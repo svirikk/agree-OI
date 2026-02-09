@@ -777,14 +777,27 @@ class AlertManager {
     );
   }
 
+  // Функція для екранування HTML символів
+  escapeHtml(text) {
+    if (typeof text !== 'string') {
+      text = String(text);
+    }
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   formatStructuredMessage(symbol, stats, interpretation, oiResult) {
     const lines = [];
     
-    lines.push(`${interpretation.emoji} <b>${interpretation.label}</b>`);
+    lines.push(`${interpretation.emoji} <b>${this.escapeHtml(interpretation.label)}</b>`);
     lines.push(`<code>───────────────────</code>`);
     
     const cleanSymbol = symbol.replace('USDT', '');
-    lines.push(`🎯 <b>${symbol}</b> #${cleanSymbol}`);
+    lines.push(`🎯 <b>${this.escapeHtml(symbol)}</b> #${this.escapeHtml(cleanSymbol)}`);
     
     const priceSign = stats.priceChange >= 0 ? '+' : '';
     lines.push(`📈 Ціна: ${priceSign}${stats.priceChange.toFixed(2)}% | $${stats.lastPrice.toFixed(4)}`);
@@ -795,7 +808,7 @@ class AlertManager {
     if (oiResult) {
       lines.push(`<code>───────────────────</code>`);
       lines.push(`📊 <b>OPEN INTEREST</b>`);
-      lines.push(`Режим: ${CONFIG.OI_MODE}`);
+      lines.push(`Режим: ${this.escapeHtml(CONFIG.OI_MODE)}`);
       
       if (oiResult.sampleCount !== 'classic') {
         lines.push(`Samples: ${oiResult.sampleCount} за ${(oiResult.evaluationTime / 1000).toFixed(1)}s`);
@@ -810,11 +823,11 @@ class AlertManager {
     
     // Strategy
     lines.push(`<code>───────────────────</code>`);
-    lines.push(`🎯 <b>СТРАТЕГІЯ: ${interpretation.strategy}</b>`);
-    lines.push(`📍 Напрямок: <b>${interpretation.finalSide}</b>`);
+    lines.push(`🎯 <b>СТРАТЕГІЯ: ${this.escapeHtml(interpretation.strategy)}</b>`);
+    lines.push(`📍 Напрямок: <b>${this.escapeHtml(interpretation.finalSide)}</b>`);
     
     if (interpretation.reason) {
-      lines.push(`💡 ${interpretation.reason}`);
+      lines.push(`💡 ${this.escapeHtml(interpretation.reason)}`);
     }
     
     lines.push(`<code>───────────────────</code>`);
@@ -841,7 +854,9 @@ class AlertManager {
       oiLast: oiResult ? oiResult.oiLast : null
     };
     
-    lines.push(`<code>${JSON.stringify(jsonData)}</code>`);
+    // Екрануємо JSON для безпечного використання в HTML
+    const jsonString = JSON.stringify(jsonData);
+    lines.push(`<code>${this.escapeHtml(jsonString)}</code>`);
     
     return lines.join('\n');
   }
@@ -849,13 +864,13 @@ class AlertManager {
   formatHumanMessage(symbol, stats, interpretation, oiResult) {
     const lines = [];
     
-    lines.push(`${interpretation.emoji} ${interpretation.label}`);
-    lines.push(`🎯 Стратегія: ${interpretation.strategy} ${interpretation.finalSide}`);
+    lines.push(`${interpretation.emoji} ${this.escapeHtml(interpretation.label)}`);
+    lines.push(`🎯 Стратегія: ${this.escapeHtml(interpretation.strategy)} ${this.escapeHtml(interpretation.finalSide)}`);
     lines.push(`💰 Об'єм: $${this.fmt(stats.totalVolume)} за ${stats.duration.toFixed(0)}с`);
     lines.push('━━━━━━━━━━━━━━━━━');
     
     const cleanSymbol = symbol.replace('USDT', '');
-    lines.push(`🎯 ${symbol} #${cleanSymbol}`);
+    lines.push(`🎯 ${this.escapeHtml(symbol)} #${this.escapeHtml(cleanSymbol)}`);
     
     const priceSign = stats.priceChange >= 0 ? '+' : '';
     lines.push(`📈 Δ Ціни: ${priceSign}${stats.priceChange.toFixed(2)}%`);
@@ -864,10 +879,10 @@ class AlertManager {
     if (oiResult) {
       lines.push('━━━━━━━━━━━━━━━━━');
       const oiSign = oiResult.oiDeltaPercent >= 0 ? '+' : '';
-      lines.push(`📊 OI (${CONFIG.OI_MODE}): ${oiSign}${oiResult.oiDeltaPercent.toFixed(2)}%`);
+      lines.push(`📊 OI (${this.escapeHtml(CONFIG.OI_MODE)}): ${oiSign}${oiResult.oiDeltaPercent.toFixed(2)}%`);
       
       if (interpretation.reason) {
-        lines.push(`💡 ${interpretation.reason}`);
+        lines.push(`💡 ${this.escapeHtml(interpretation.reason)}`);
       }
     }
     
